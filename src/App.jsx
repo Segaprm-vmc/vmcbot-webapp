@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const equipmentOptions = [
@@ -23,6 +23,15 @@ export default function App() {
     visualResult: "",
     files: []
   });
+
+  useEffect(() => {
+    // Инициализация Telegram Web App
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +62,11 @@ export default function App() {
       const result = await response.json();
       if (result.success) {
         alert("Рекламация отправлена успешно!");
-        // Очищаем форму после успешной отправки
+        // Закрываем веб-приложение Telegram
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.close();
+        }
+        // Очищаем форму
         setForm({
           contactPerson: "",
           company: "",
